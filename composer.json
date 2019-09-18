@@ -29,5 +29,6 @@
     "psr-4": {
       "Modules\\Opx\\Pages\\": "src/"
     }
-  }
+  },
+  "minimum-stability": "dev"
 }
