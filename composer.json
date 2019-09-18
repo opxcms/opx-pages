@@ -1,0 +1,33 @@
+{
+  "name": "opxcms/opx-pages",
+  "description": "OpxCMS pages module.",
+  "type": "library",
+  "keywords": [
+    "opxcms",
+    "pages",
+    "module"
+  ],
+  "license": "MIT",
+  "support": {
+    "issues": "https://github.com/opxcms/opx-pages/issues",
+    "source": "https://github.com/opxcms/opx-pages"
+  },
+  "authors": [
+    {
+      "name": "Lozovoy Vyacheslav",
+      "email": "opxcms@gmail.com"
+    }
+  ],
+  "require": {
+    "php": "^7.1.3",
+    "opxcms/opx-foundation": "^1.0.1"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^7.5"
+  },
+  "autoload": {
+    "psr-4": {
+      "Modules\\Opx\\Pages\\": "src/"
+    }
+  }
+}
