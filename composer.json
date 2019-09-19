@@ -30,5 +30,10 @@
       "Modules\\Opx\\Pages\\": "src/"
     }
   },
+  "extra": {
+    "opxcms" : {
+      "module": "Modules\\Opx\\Pages\\Pages"
+    }
+  },
   "minimum-stability": "dev"
 }
