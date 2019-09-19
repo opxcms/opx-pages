@@ -20,6 +20,10 @@ class RouteRegistrar extends BaseRouteRegistrar
      */
     public function registerPublicRoutes($profile): void
     {
+        if(!$this->module->isMigrated()) {
+            return;
+        }
+
         $this->pages = DB::table('pages')
             ->select(['id', 'parent_id', 'alias'])
             ->whereNull('deleted_at')
