@@ -2,6 +2,7 @@
 
 namespace Modules\Opx\Pages\Controllers;
 
+use Core\Events\RouteChanged;
 use Core\Http\Controllers\APIListController;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Http\JsonResponse;
@@ -35,6 +36,8 @@ class ManagePagesActionsApiController extends APIListController
             }
         }
 
+        event(new RouteChanged());
+
         return response()->json(['message' => 'success']);
     }
 
@@ -58,6 +61,8 @@ class ManagePagesActionsApiController extends APIListController
                 $page->restore();
             }
         }
+
+        event(new RouteChanged());
 
         return response()->json(['message' => 'success']);
     }

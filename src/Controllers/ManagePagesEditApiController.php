@@ -2,6 +2,7 @@
 
 namespace Modules\Opx\Pages\Controllers;
 
+use Core\Events\RouteChanged;
 use Core\Foundation\Templater\Templater;
 use Core\Http\Controllers\APIFormController;
 use Illuminate\Http\JsonResponse;
@@ -224,7 +225,15 @@ class ManagePagesEditApiController extends APIFormController
 
         $this->setAttributes($page, $data, $attributes);
 
+        $new = !$page->exists;
+
         $page->save();
+
+        $changed = $page->getChanges();
+
+        if ($new || in_array('alias', $changed, true) || in_array('parent_id', $changed, true)) {
+            event(new RouteChanged());
+        }
 
         return $page;
     }
