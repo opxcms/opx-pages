@@ -231,7 +231,7 @@ class ManagePagesEditApiController extends APIFormController
 
         $changed = $page->getChanges();
 
-        if ($new || in_array('alias', $changed, true) || in_array('parent_id', $changed, true)) {
+        if ($new || isset($changed['alias']) || isset($changed['parent_id'])) {
             event(new RouteChanged());
         }
 
