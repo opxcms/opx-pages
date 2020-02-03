@@ -2,10 +2,11 @@
 
 return [
     'items' => [
-        'menu' => [
+        'pages' => [
             'caption' => 'opx_pages::manage.pages',
             'route' => 'opx_pages::pages_list',
             'section' => 'system/site',
+            'permission' => 'opx_pages::list',
         ],
     ],
 

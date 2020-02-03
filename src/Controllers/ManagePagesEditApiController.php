@@ -7,6 +7,7 @@ use Core\Foundation\Templater\Templater;
 use Core\Http\Controllers\APIFormController;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Modules\Admin\Authorization\AdminAuthorization;
 use Modules\Opx\Pages\Models\Page;
 use Modules\Opx\Pages\OpxPages;
 
@@ -27,6 +28,10 @@ class ManagePagesEditApiController extends APIFormController
      */
     public function getAdd(Request $request): JsonResponse
     {
+        if (!AdminAuthorization::can('opx_pages::add')) {
+            return $this->returnNotAuthorizedResponse();
+        }
+
         $parentId = $request->input('parent_id', 0);
         $templateName = $request->input('template');
         $initiator = $request->input('__initiator');
@@ -70,6 +75,10 @@ class ManagePagesEditApiController extends APIFormController
      */
     public function getEdit(Request $request): JsonResponse
     {
+        if (!AdminAuthorization::can('opx_pages::edit')) {
+            return $this->returnNotAuthorizedResponse();
+        }
+
         $parentId = $request->input('parent_id', 0);
         $templateName = $request->input('template');
         $initiator = $request->input('__initiator');
@@ -114,6 +123,10 @@ class ManagePagesEditApiController extends APIFormController
      */
     public function postCreate(Request $request): JsonResponse
     {
+        if (!AdminAuthorization::can('opx_pages::add')) {
+            return $this->returnNotAuthorizedResponse();
+        }
+
         if ($request->input('__reload') === true) {
             return $this->getAdd($request);
         }
@@ -150,6 +163,10 @@ class ManagePagesEditApiController extends APIFormController
      */
     public function postSave(Request $request): JsonResponse
     {
+        if (!AdminAuthorization::can('opx_pages::edit')) {
+            return $this->returnNotAuthorizedResponse();
+        }
+
         if ($request->input('__reload') === true) {
             return $this->getEdit($request);
         }
@@ -247,7 +264,10 @@ class ManagePagesEditApiController extends APIFormController
      */
     public function postSaveImage(Request $request): JsonResponse
     {
-        // TODO add ID to retrieve template ???
+        if (!AdminAuthorization::can('opx_pages::edit') || !AdminAuthorization::can('opx_pages::edit_images')) {
+            return $this->returnNotAuthorizedResponse();
+        }
+
         return $this->storeImageFromRequest($request, OpxPages::getTemplateFileName('page.php'));
     }
 
@@ -260,7 +280,10 @@ class ManagePagesEditApiController extends APIFormController
      */
     public function postCreateImage(Request $request): JsonResponse
     {
-        // TODO add ID to retrieve template ???
+        if (!AdminAuthorization::can('opx_pages::add') || !AdminAuthorization::can('opx_pages::edit_images')) {
+            return $this->returnNotAuthorizedResponse();
+        }
+
         return $this->storeImageFromRequest($request, OpxPages::getTemplateFileName('page.php'));
     }
 }

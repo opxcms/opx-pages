@@ -3,14 +3,15 @@
 namespace Modules\Opx\Pages\Controllers;
 
 use Core\Events\RouteChanged;
-use Core\Http\Controllers\APIListController;
+use Core\Http\Controllers\ApiActionsController;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Exception;
+use Modules\Admin\Authorization\AdminAuthorization;
 use Modules\Opx\Pages\Models\Page;
 
-class ManagePagesActionsApiController extends APIListController
+class ManagePagesActionsApiController extends ApiActionsController
 {
     use FormatPageTrait;
 
@@ -24,6 +25,10 @@ class ManagePagesActionsApiController extends APIListController
      */
     public function postDelete(Request $request): JsonResponse
     {
+        if(!AdminAuthorization::can('opx_pages::delete')) {
+            return $this->returnNotAuthorizedResponse();
+        }
+
         $ids = $request->all();
 
         /** @var EloquentBuilder $pages */
@@ -50,6 +55,10 @@ class ManagePagesActionsApiController extends APIListController
      */
     public function postRestore(Request $request): JsonResponse
     {
+        if(!AdminAuthorization::can('opx_pages::delete')) {
+            return $this->returnNotAuthorizedResponse();
+        }
+
         $ids = $request->all();
 
         /** @var EloquentBuilder $pages */
@@ -77,6 +86,10 @@ class ManagePagesActionsApiController extends APIListController
      */
     public function postEnable(Request $request): JsonResponse
     {
+        if(!AdminAuthorization::can('opx_pages::disable')) {
+            return $this->returnNotAuthorizedResponse();
+        }
+
         $ids = $request->all();
 
         /** @var EloquentBuilder $pages */
@@ -110,6 +123,10 @@ class ManagePagesActionsApiController extends APIListController
      */
     public function postDisable(Request $request): JsonResponse
     {
+        if(!AdminAuthorization::can('opx_pages::disable')) {
+            return $this->returnNotAuthorizedResponse();
+        }
+
         $ids = $request->all();
 
         /** @var EloquentBuilder $pages */

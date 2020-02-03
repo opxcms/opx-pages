@@ -2,15 +2,15 @@
 
 namespace Modules\Opx\Pages\Controllers;
 
-use Carbon\Carbon;
 use Core\Foundation\ListHelpers\Filters;
 use Core\Foundation\ListHelpers\Orders;
+use Core\Foundation\ListHelpers\Search;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Query\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Core\Http\Controllers\APIListController;
+use Modules\Admin\Authorization\AdminAuthorization;
 use Modules\Opx\Pages\Models\Page;
 
 class ManagePagesListApiController extends APIListController
@@ -20,40 +20,7 @@ class ManagePagesListApiController extends APIListController
     protected $caption = 'opx_pages::manage.pages';
     protected $description;
     protected $source = 'manage/api/module/opx_pages/pages_list/pages';
-
-
-    protected $enable = 'manage/api/module/opx_pages/pages_actions/enable';
-    protected $disable = 'manage/api/module/opx_pages/pages_actions/disable';
-    protected $delete = 'manage/api/module/opx_pages/pages_actions/delete';
-    protected $restore = 'manage/api/module/opx_pages/pages_actions/restore';
-
-    protected $add = 'opx_pages::pages_add';
-    protected $edit = 'opx_pages::pages_edit';
-
     protected $children = true;
-
-    protected $filters = [
-        'show_all' => [
-            'caption' => 'filters.filter_by_show_all',
-            'type' => 'switch',
-            'enabled' => false,
-            'value' => true,
-        ],
-        'published' => [
-            'caption' => 'filters.filter_by_published',
-            'type' => 'checkbox',
-            'enabled' => false,
-            'value' => 'published',
-            'options' => ['published' => 'filters.filter_value_published', 'unpublished' => 'filters.filter_value_unpublished'],
-        ],
-        'show_deleted' => [
-            'caption' => 'filters.filter_by_deleted',
-            'type' => 'checkbox',
-            'enabled' => false,
-            'value' => 'show_deleted',
-            'options' => ['show_deleted' => 'filters.filter_value_deleted', 'only_deleted' => 'filters.filter_value_only_deleted'],
-        ],
-    ];
 
     protected $order = [
         'current' => 'id',
@@ -70,33 +37,21 @@ class ManagePagesListApiController extends APIListController
             'publish_end' => 'orders.sort_by_publish_end',
         ],
     ];
-//
-//    public $search = [
-//        'id' => [
-//            'caption' => 'opx_users::manage.search_by_id',
-//            'default' => true,
-//        ],
-//        'email' => [
-//            'caption' => 'opx_users::manage.search_by_email',
-//            'default' => true,
-//        ],
-//        'phone' => [
-//            'caption' => 'opx_users::manage.search_by_phone',
-//            'default' => true,
-//        ],
-//        'last_name' => [
-//            'caption' => 'opx_users::manage.search_by_last_name',
-//            'default' => true,
-//        ],
-//        'first_name' => [
-//            'caption' => 'opx_users::manage.search_by_first_name',
-//            'default' => false,
-//        ],
-//        'middle_name' => [
-//            'caption' => 'opx_users::manage.search_by_middle_name',
-//            'default' => false,
-//        ],
-//    ];
+
+    public $search = [
+        'id' => [
+            'caption' => 'opx_pages::manage.search_by_id',
+            'default' => true,
+        ],
+        'name' => [
+            'caption' => 'opx_pages::manage.search_by_name',
+            'default' => true,
+        ],
+        'alias' => [
+            'caption' => 'opx_pages::manage.search_by_alias',
+            'default' => true,
+        ],
+    ];
 
     /**
      * Get list of users with sorting, filters and search.
@@ -107,6 +62,10 @@ class ManagePagesListApiController extends APIListController
      */
     public function postPages(Request $request): JsonResponse
     {
+        if(!AdminAuthorization::can('opx_pages::list')) {
+            return $this->returnNotAuthorizedResponse();
+        }
+
         $order = $request->input('order');
         $filters = $request->input('filters');
         $search = $request->input('search');
@@ -217,7 +176,7 @@ class ManagePagesListApiController extends APIListController
      *
      * @return  EloquentBuilder
      */
-    public function applyFilters(EloquentBuilder $query, $filters): EloquentBuilder
+    protected function applyFilters(EloquentBuilder $query, $filters): EloquentBuilder
     {
         $query = Filters::processPublishedFilter($query, $filters);
         $query = Filters::processDeletedFilter($query, $filters);
@@ -235,33 +194,66 @@ class ManagePagesListApiController extends APIListController
      */
     protected function applySearch(EloquentBuilder $query, $search): EloquentBuilder
     {
-//        if (!empty($search['subject']) && !empty($search['fields'])) {
-//
-//            $subject = str_replace('*', '%', $search['subject']);
-//            $fields = explode(',', $search['fields']);
-//
-//            $query = $query->where(static function ($q) use ($fields, $subject) {
-//                /** @var Builder $q */
-//                if (in_array('id', $fields, true)) {
-//                    $q->orWhere('users.id', 'LIKE', $subject);
-//                }
-//                if (in_array('email', $fields, true)) {
-//                    $q->orWhere('users.email', 'LIKE', $subject);
-//                }
-//                if (in_array('phone', $fields, true)) {
-//                    $q->orWhere('users.phone', 'LIKE', $subject);
-//                }
-//                if (in_array('last_name', $fields, true)) {
-//                    $q->orWhere('user_details.last_name', 'LIKE', $subject);
-//                }
-//                if (in_array('first_name', $fields, true)) {
-//                    $q->orWhere('user_details.first_name', 'LIKE', $subject);
-//                }
-//                if (in_array('middle_name', $fields, true)) {
-//                    $q->orWhere('user_details.middle_name', 'LIKE', $subject);
-//                }
-//            });
-//        }
-        return $query;
+        return Search::applySearch($query, $search, ['id', 'name', 'alias']);
+    }
+
+    /**
+     * Get add link.
+     *
+     * @return  string
+     */
+    protected function getAddLink(): ?string
+    {
+        return AdminAuthorization::can('opx_pages::add') ? 'opx_pages::pages_add' : null;
+    }
+
+    /**
+     * Get edit link.
+     *
+     * @return  string
+     */
+    protected function getEditLink(): ?string
+    {
+        return AdminAuthorization::can('opx_pages::edit') ? 'opx_pages::pages_edit' : null;
+    }
+
+    /**
+     * Get edit link.
+     *
+     * @return  string
+     */
+    protected function getEnableLink(): ?string
+    {
+        return AdminAuthorization::can('opx_pages::disable') ? 'manage/api/module/opx_pages/pages_actions/enable' : null;
+    }
+
+    /**
+     * Get edit link.
+     *
+     * @return  string
+     */
+    protected function getDisableLink(): ?string
+    {
+        return AdminAuthorization::can('opx_pages::disable') ? 'manage/api/module/opx_pages/pages_actions/disable' : null;
+    }
+
+    /**
+     * Get edit link.
+     *
+     * @return  string
+     */
+    protected function getDeleteLink(): ?string
+    {
+        return AdminAuthorization::can('opx_pages::delete') ? 'manage/api/module/opx_pages/pages_actions/delete' : null;
+    }
+
+    /**
+     * Get edit link.
+     *
+     * @return  string
+     */
+    protected function getRestoreLink(): ?string
+    {
+        return AdminAuthorization::can('opx_pages::delete') ? 'manage/api/module/opx_pages/pages_actions/restore' : null;
     }
 }

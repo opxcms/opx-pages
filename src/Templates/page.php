@@ -24,10 +24,10 @@ use Modules\Shop\Properties\Models\Group;
 
 return [
     'sections' => [
-        Template::section('content'),
-        Template::section('images'),
-        Template::section('general'),
-        Template::section('seo'),
+        Template::section('content', '|opx_pages::edit_content'),
+        Template::section('images', '|opx_pages::edit_images'),
+        Template::section('general', '|opx_pages::edit_main'),
+        Template::section('seo', '|opx_pages::edit_seo'),
     ],
     'groups' => [
         Template::group('common'),
