@@ -1,12 +1,10 @@
 <?php
 
-namespace Modules\Shop\Categories\Templates;
+namespace Modules\Opx\Pages\Templates;
 
 use Core\Foundation\Template\Template;
 use Modules\Opx\Pages\Models\Page;
 use Modules\Opx\Pages\OpxPages;
-use Modules\Shop\Categories\Models\Category;
-use Modules\Shop\Properties\Models\Group;
 
 /**
  * HELP:
