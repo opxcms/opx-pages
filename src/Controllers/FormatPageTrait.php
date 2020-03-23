@@ -31,15 +31,16 @@ trait FormatPageTrait
             $props[] = trans('manage.publish_end') . ': ';
             $props[] = 'datetime:' . $page->getAttribute('publish_end')->toIso8601String();
         }
-        return $this->makeListRecord(
-            $id,
-            $name,
-            $alias,
-            null,
-            $props,
-            $enabled,
-            $isDeleted,
-            $childrenCount
-        );
+
+        return [
+            'id' => $id,
+            'title' => $name,
+            'subtitle' => $alias,
+            'description' => null,
+            'properties' => $props,
+            'enabled' => $enabled,
+            'deleted' => $isDeleted,
+            'children_count' => $childrenCount,
+        ];
     }
 }
