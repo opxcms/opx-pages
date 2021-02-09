@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Exception;
+use JsonException;
 use Modules\Admin\Authorization\AdminAuthorization;
 use Modules\Opx\Pages\Models\Page;
 
@@ -83,6 +84,7 @@ class ManagePagesActionsApiController extends ApiActionsController
      * @param Request $request
      *
      * @return  JsonResponse
+     * @throws JsonException
      */
     public function postEnable(Request $request): JsonResponse
     {
@@ -120,6 +122,7 @@ class ManagePagesActionsApiController extends ApiActionsController
      * @param Request $request
      *
      * @return  JsonResponse
+     * @throws JsonException
      */
     public function postDisable(Request $request): JsonResponse
     {

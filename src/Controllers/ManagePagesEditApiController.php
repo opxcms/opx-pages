@@ -7,6 +7,7 @@ use Core\Foundation\Templater\Templater;
 use Core\Http\Controllers\APIFormController;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use JsonException;
 use Modules\Admin\Authorization\AdminAuthorization;
 use Modules\Opx\Pages\Models\Page;
 use Modules\Opx\Pages\OpxPages;
@@ -48,7 +49,7 @@ class ManagePagesEditApiController extends APIFormController
         } else if ($parentId !== 0 || $initiator === 'parent_id') {
             // get template from parent page settings
             /** @var Page $parentPage */
-            $parentPage = Page::where('id', $parentId)->first();
+            $parentPage = Page::query()->where('id', $parentId)->first();
             $name = $parentPage !== null ? $parentPage->getAttribute('child_template') : 'page';
             $layout = $parentPage !== null ? $parentPage->getAttribute('child_layout') : 'page.blade.php';
 
@@ -221,6 +222,7 @@ class ManagePagesEditApiController extends APIFormController
      * @param array $data
      *
      * @return  Page
+     * @throws JsonException
      */
     protected function updatePageData(Page $page, array $data): Page
     {
@@ -261,6 +263,8 @@ class ManagePagesEditApiController extends APIFormController
      * @param Request $request
      *
      * @return  JsonResponse
+     *
+     * @throws JsonException
      */
     public function postSaveImage(Request $request): JsonResponse
     {
@@ -268,7 +272,7 @@ class ManagePagesEditApiController extends APIFormController
             return $this->returnNotAuthorizedResponse();
         }
 
-        return $this->storeImageFromRequest($request, OpxPages::getTemplateFileName('page.php'));
+        return $this->storeFilesFromRequest($request, OpxPages::getTemplateFileName('page.php'));
     }
 
     /**
@@ -277,6 +281,8 @@ class ManagePagesEditApiController extends APIFormController
      * @param Request $request
      *
      * @return  JsonResponse
+     *
+     * @throws JsonException
      */
     public function postCreateImage(Request $request): JsonResponse
     {
@@ -284,6 +290,6 @@ class ManagePagesEditApiController extends APIFormController
             return $this->returnNotAuthorizedResponse();
         }
 
-        return $this->storeImageFromRequest($request, OpxPages::getTemplateFileName('page.php'));
+        return $this->storeFilesFromRequest($request, OpxPages::getTemplateFileName('page.php'));
     }
 }

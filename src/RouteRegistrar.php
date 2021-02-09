@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Route;
 class RouteRegistrar extends BaseRouteRegistrar
 {
     /** @var array */
-    protected $pages;
+    protected array $pages;
 
     /**
      * Handle public route registration.
@@ -18,7 +18,7 @@ class RouteRegistrar extends BaseRouteRegistrar
      *
      * @return  void
      */
-    public function registerPublicRoutes($profile): void
+    public function registerPublicRoutes(string $profile): void
     {
         if(!$this->module->isMigrated()) {
             return;
@@ -38,7 +38,7 @@ class RouteRegistrar extends BaseRouteRegistrar
             return;
         }
 
-        $namespace = class_exists(\Templates\Opx\Pages\PageRenderController::class)
+        $namespace = class_exists('Templates\Opx\Pages\PageRenderController')
             ? 'Templates\Opx\Pages'
             : 'Modules\Opx\Pages\Controllers';
         Route::namespace($namespace)
